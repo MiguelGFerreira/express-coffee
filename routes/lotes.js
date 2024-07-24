@@ -1,9 +1,10 @@
 import express from 'express';
 
-import { getLotes } from '../controllers/lotes.js'
+import { getLoteById, getLotes } from '../controllers/lotes.js'
 
 const router = express.Router();
 
 router.get('/', getLotes);
+router.get('/:idlote', getLoteById);
 
 export default router;
