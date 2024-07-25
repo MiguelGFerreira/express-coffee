@@ -24,7 +24,7 @@ export const getLotes = (req, res) => {
 	JOIN Pesagem P ON RT.idPesagem = P.idpesagem
 	JOIN Clifor C ON NF.ID_Fornecedor = C.idclifor
 	LEFT JOIN TCE_classificacao TC ON L.idlote = TC.idlote
-	WHERE CAST(NF.data_entrada AS DATE) > '20240701'
+	WHERE CAST(NF.data_entrada AS DATE) > '20240724'
 	`
 	new sql.Request().query(query, (err, result) => {
 		if (err) {
@@ -50,6 +50,22 @@ export const getLoteById = (req, res) => {
 		,TRIM(C.nome) nome
 		,TRIM(C.cidade) cidade
 		,CASE WHEN TC.clas_id IS NULL THEN 'Não Classificado' ELSE 'Classificado' END AS status
+		,TC.clas_id
+		,TC.clas_defeitos
+		,TC.clas_umidade
+		,TC.clas_fundo10
+		,TC.clas_impurezas
+		,TC.clas_broca
+		,TC.clas_ac18
+		,TC.clas_moka10
+		,TC.clas_peneira17
+		,TC.clas_peneira16
+		,TC.clas_peneira15
+		,TC.clas_peneira14
+		,TC.clas_peneira13
+		,TC.clas_peneira12
+		,TC.clas_peneira10_11
+		,TC.clas_cata
 	FROM NotaFiscal NF
 	JOIN Tb_Notas_Rec_Transp RT ON NF.id = RT.idNotaFiscal
 		AND NF.num_nota = RT.numeroNota
@@ -81,20 +97,20 @@ export const postLote = (req, res) => {
 		,${req.body.fundo10}
 		,${req.body.impurezas}
 		,${req.body.broca}
-		,${req.body.p18}
-		,${req.body.p17}
-		,${req.body.mk10}
-		,${req.body.p16}
-		,${req.body.p15}
-		,${req.body.p14}
-		,${req.body.p13}
-		,${req.body.p12}
-		,${req.body.p10_11}
+		,${req.body.ac18}
+		,${req.body.moka10}
+		,${req.body.peneira17}
+		,${req.body.peneira16}
+		,${req.body.peneira15}
+		,${req.body.peneira14}
+		,${req.body.peneira13}
+		,${req.body.peneira12}
+		,${req.body.peneira10_11}
 		,${req.body.cata}
 		)`;
 
 	console.log(query);
-	
+
 	new sql.Request().query(query, (err, result) => {
 		if (err) {
 			console.error("Error executing query:", err);
