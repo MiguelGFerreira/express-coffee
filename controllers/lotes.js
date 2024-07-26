@@ -107,7 +107,41 @@ export const postLote = (req, res) => {
 		,${req.body.peneira12}
 		,${req.body.peneira10_11}
 		,${req.body.cata}
+		,${req.body.resultado}
+		,${req.body.pagamento}
 		)`;
+
+	console.log(query);
+
+	new sql.Request().query(query, (err, result) => {
+		if (err) {
+			console.error("Error executing query:", err);
+		} else {
+			res.send(result.recordset); // Send query result as response
+		}
+	});
+}
+
+export const patchLote = (req, res) => {
+	const query = `UPDATE TCE_classificacao SET
+		,clas_defeitos = ${req.body.defeitos}
+		,clas_umidade = ${req.body.umidade}
+		,clas_fundo10 = ${req.body.fundo10}
+		,clas_impurezas = ${req.body.impurezas}
+		,clas_broca = ${req.body.broca}
+		,clas_ac18 = ${req.body.ac18}
+		,clas_moka10 = ${req.body.moka10}
+		,clas_peneira17 = ${req.body.peneira17}
+		,clas_peneira16 = ${req.body.peneira16}
+		,clas_peneira15 = ${req.body.peneira15}
+		,clas_peneira14 = ${req.body.peneira14}
+		,clas_peneira13 = ${req.body.peneira13}
+		,clas_peneira12 = ${req.body.peneira12}
+		,clas_peneira10_11 = ${req.body.peneira10_11}
+		,clas_cata = ${req.body.cata}
+		,clas_resultado = ${req.body.resultado}
+		,clas_pagamento = ${req.body.pagamento}
+		WHERE clas_id = ${req.body.clas_id}`;
 
 	console.log(query);
 
