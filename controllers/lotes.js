@@ -66,6 +66,8 @@ export const getLoteById = (req, res) => {
 		,TC.clas_peneira12
 		,TC.clas_peneira10_11
 		,TC.clas_cata
+		,TC.clas_resultado
+		,TC.clas_pagamento
 	FROM NotaFiscal NF
 	JOIN Tb_Notas_Rec_Transp RT ON NF.id = RT.idNotaFiscal
 		AND NF.num_nota = RT.numeroNota
@@ -78,7 +80,6 @@ export const getLoteById = (req, res) => {
 	WHERE L.idlote = ${req.params.idlote}
 	`
 
-	console.log(query);
 	new sql.Request().query(query, (err, result) => {
 		if (err) {
 			console.error("Error executing query:", err);
@@ -107,8 +108,8 @@ export const postLote = (req, res) => {
 		,${req.body.peneira12}
 		,${req.body.peneira10_11}
 		,${req.body.cata}
-		,${req.body.resultado}
-		,${req.body.pagamento}
+		,'${req.body.resultado}'
+		,'${req.body.pagamento}'
 		)`;
 
 	console.log(query);
@@ -124,7 +125,7 @@ export const postLote = (req, res) => {
 
 export const patchLote = (req, res) => {
 	const query = `UPDATE TCE_classificacao SET
-		,clas_defeitos = ${req.body.defeitos}
+		clas_defeitos = ${req.body.defeitos}
 		,clas_umidade = ${req.body.umidade}
 		,clas_fundo10 = ${req.body.fundo10}
 		,clas_impurezas = ${req.body.impurezas}
@@ -139,8 +140,8 @@ export const patchLote = (req, res) => {
 		,clas_peneira12 = ${req.body.peneira12}
 		,clas_peneira10_11 = ${req.body.peneira10_11}
 		,clas_cata = ${req.body.cata}
-		,clas_resultado = ${req.body.resultado}
-		,clas_pagamento = ${req.body.pagamento}
+		,clas_resultado = '${req.body.resultado}'
+		,clas_pagamento = '${req.body.pagamento}'
 		WHERE clas_id = ${req.body.clas_id}`;
 
 	console.log(query);
