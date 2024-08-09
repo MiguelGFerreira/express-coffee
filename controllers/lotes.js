@@ -1,7 +1,10 @@
 import sql from 'mssql';
 
 export const getLotes = (req, res) => {
-	const query = `
+	// Receiving data sent by client side
+	const { lotNumber, isClassified, date, seller } = req.query;
+	
+	let query = `
 	SELECT CONVERT(VARCHAR, NF.data_entrada, 103) data_entrada
 		,RT.referencia
 		,NF.valor_total
@@ -24,8 +27,27 @@ export const getLotes = (req, res) => {
 	JOIN Pesagem P ON RT.idPesagem = P.idpesagem
 	JOIN Clifor C ON NF.ID_Fornecedor = C.idclifor
 	LEFT JOIN TCE_classificacao TC ON L.idlote = TC.idlote
-	WHERE CAST(NF.data_entrada AS DATE) > '20240724'
 	`
+
+	if (!date) {
+		query += "WHERE CAST(NF.data_entrada AS DATE) = CAST(GETDATE() AS DATE)";
+	} else {
+		query += `WHERE CAST(NF.data_entrada AS DATE) = '${date}'`;
+	}
+	if (lotNumber) {
+		query += ` AND L.numLote LIKE '%${lotNumber}%'`;
+	}
+	if (isClassified) {
+		if (isClassified === 'classificado') {
+			query += ` AND TC.clas_id IS NOT NULL`;
+		} else if (isClassified === 'naoClassificado') {
+			query += ` AND TC.clas_id IS NULL`;
+		}
+	}
+	if (seller) {
+		query += ` AND C.nome LIKE '%${seller}%'`
+	}
+
 	new sql.Request().query(query, (err, result) => {
 		if (err) {
 			console.error("Error executing query:", err);
@@ -68,6 +90,8 @@ export const getLoteById = (req, res) => {
 		,TC.clas_cata
 		,TC.clas_resultado
 		,TC.clas_pagamento
+		,TC.clas_usuario
+		,TC.clas_editado
 	FROM NotaFiscal NF
 	JOIN Tb_Notas_Rec_Transp RT ON NF.id = RT.idNotaFiscal
 		AND NF.num_nota = RT.numeroNota
@@ -110,9 +134,9 @@ export const postLote = (req, res) => {
 		,${req.body.cata}
 		,'${req.body.resultado}'
 		,'${req.body.pagamento}'
+		,'${req.body.usuario}'
+		,''
 		)`;
-
-	console.log(query);
 
 	new sql.Request().query(query, (err, result) => {
 		if (err) {
@@ -142,9 +166,8 @@ export const patchLote = (req, res) => {
 		,clas_cata = ${req.body.cata}
 		,clas_resultado = '${req.body.resultado}'
 		,clas_pagamento = '${req.body.pagamento}'
+		,clas_editado = '${req.body.editado}'
 		WHERE clas_id = ${req.body.clas_id}`;
-
-	console.log(query);
 
 	new sql.Request().query(query, (err, result) => {
 		if (err) {
